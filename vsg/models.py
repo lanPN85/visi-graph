@@ -22,19 +22,35 @@ class LineSegment:
 
     @property
     def coeffs(self):
-        a = (self.p1.y - self.p2.y) / (self.p1.x - self.p2.x)
-        b = self.p1.y - a * self.p1.x
-        return a, b
+        """
+        Calculates a, b, c for the line equation ax + by + c = 0
+        :return: A tuple (a, b, c)
+        """
+        try:
+            _a = (self.p1.y - self.p2.y) / (self.p1.x - self.p2.x)
+            _b = self.p1.y - _a * self.p1.x
+            a, b, c = _a, -1, _b
+            return a, b, c
+        except ZeroDivisionError:
+            return 1, 0, -self.p1.x
 
     def __len__(self):
         ln = math.sqrt((self.p1.x - self.p2.x) ** 2 + (self.p1.y - self.p2.y) ** 2)
         return ln
 
+    def __eq__(self, other):
+        if not isinstance(other, LineSegment):
+            return False
+        return (self.p1 == other.p1 and self.p2 == other.p2) or (self.p1 == other.p2 and self.p2 == other.p1)
+
+    def __repr__(self):
+        return 'LineSegment(%s, %s)' % (self.p1, self.p2)
+
     def __contains__(self, p: Coordinate):
-        a, b = self.coeffs
+        a, b, c = self.coeffs
         inx = min(self.p1.x, self.p2.x) <= p.x <= max(self.p1.x, self.p2.x)
         iny = min(self.p1.y, self.p2.y) <= p.y <= max(self.p1.y, self.p2.y)
-        aligned = a * p.x + b == p.y
+        aligned = abs(a * p.x + b * p.y + c) < 1e-4
         return inx and iny and aligned
 
 
@@ -52,6 +68,9 @@ class Polygon:
         # Sanity check
         assert len(self._vertices) == len(self._edges)
 
+    def __contains__(self, item):
+        return item in self.edges or item in self.vertices
+
     @property
     def vertices(self):
         return self._vertices
@@ -60,6 +79,10 @@ class Polygon:
     def edges(self):
         return self._edges
 
+    def impact_points(self, line: LineSegment):
+        from vsg import functional
+        return functional.impact_points(self, line)
+
 
 _GraphNode = namedtuple('Node', ['coord', 'w'])
 
@@ -67,7 +90,7 @@ _GraphNode = namedtuple('Node', ['coord', 'w'])
 class VisibilityGraph:
     def __init__(self, s: Coordinate, t: Coordinate, segments=None):
         self._s, self._t = s, t
-        self._segments = [] if segments is None else segments
+        self._segments = list() if segments is None else segments
         self._edges = None
         self._vertices = None
 
@@ -92,6 +115,10 @@ class VisibilityGraph:
     @property
     def segments(self):
         return self._segments
+
+    def add_segment(self, segment: LineSegment):
+        if segment not in self.segments:
+            self.segments.append(segment)
 
     @property
     def constructed(self):
