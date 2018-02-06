@@ -36,6 +36,9 @@ class LineSegment:
 
     @property
     def length(self):
+        """
+        :return: The segment's length, a.k.a the Euclidean distance between its endpoints.
+        """
         ln = math.sqrt((self.p1.x - self.p2.x) ** 2 + (self.p1.y - self.p2.y) ** 2)
         return ln
 
@@ -81,6 +84,11 @@ class Polygon:
         return self._edges
 
     def impact_points(self, line: LineSegment):
+        """
+        Calculates points where the polygon and a line segment meets.
+        :param line: A line segment
+        :return: A set of Coordinate of impact points, or None if there are none.
+        """
         from vsg import functional
         return functional.impact_points(self, line)
 
@@ -96,6 +104,10 @@ class VisibilityGraph:
         self._vertices = None
 
     def construct_adj_list(self):
+        """
+        Constructs the graph's adjacency list based on its segments.
+        Should be done after the graph's segments have been fully added.
+        """
         if self.constructed:
             print('WARNING: Overriding existing edge list.', file=sys.stderr)
 
@@ -118,6 +130,10 @@ class VisibilityGraph:
         return tuple(self._segments)
 
     def add_segment(self, segment: LineSegment):
+        """
+        Adds a segment to the graph. No op if the segment is already in the graph.
+        :param segment: A LineSegment
+        """
         if segment not in self.segments:
             self._segments.append(segment)
 

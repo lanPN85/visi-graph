@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 
 from vsg.models import LineSegment, Polygon, Coordinate
@@ -23,10 +25,29 @@ def intersect_point(l1: LineSegment, l2: LineSegment):
 
 
 def impact_points(polygon: Polygon, segment: LineSegment):
-    points = []
+    """
+    Calculates points where a polygon and a line segment meets.
+    :param polygon: A Polygon object
+    :param segment: A LineSegment object
+    :return: A set of Coordinate of impact points, or None if there are none.
+    """
+
+    points = set()
     for edge in polygon.edges:
         p = intersect_point(segment, edge)
         if p is not None:
-            points.append(p)
+            points.add(p)
 
     return points if len(points) > 0 else None
+
+
+def path_length(path: List[Coordinate]):
+    """
+    Calculates the length of a path
+    :param path: A list of Coordinates
+    :return: The path's length
+    """
+    length = 0.
+    for prev, current in zip(path[:-1], path[1:]):
+        length += LineSegment(prev, current).length
+    return length
