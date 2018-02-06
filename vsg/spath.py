@@ -1,9 +1,9 @@
 from typing import List
 
-from vsg.models import VisibilityGraph, Coordinate
+from vsg.models import VisibilityGraph, Point
 
 
-def dijkstra(graph: VisibilityGraph) -> List[Coordinate]:
+def dijkstra(graph: VisibilityGraph) -> List[Point]:
     if not graph.constructed:
         graph.construct_adj_list()
 

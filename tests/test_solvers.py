@@ -1,33 +1,31 @@
 import unittest
 
-from vsg import Polygon, Coordinate, LineSegment
+from vsg import Polygon, Point, LineSegment
 
 import vsg.solvers as solvers
 
 
 class SolverTest(unittest.TestCase):
     def test_brute_1(self):
-        s = Coordinate(0., 0.)
-        t = Coordinate(20., 11.)
+        s = Point(0., 0.)
+        t = Point(20., 11.)
 
         o1 = Polygon([
-            LineSegment(Coordinate(1., 3.), Coordinate(2., 4.)),
-            LineSegment(Coordinate(2., 4.), Coordinate(5., 2.)),
-            LineSegment(Coordinate(5., 2.), Coordinate(2., 1.)),
-            LineSegment(Coordinate(2., 1.), Coordinate(1., 3.))
+            Point(1., 3.), Point(2., 4.),
+            Point(5., 2.), Point(2., 1.)
         ])
 
         graph = solvers.brute_force(s, t, [o1])
         correct = [
-            LineSegment(Coordinate(0., 0.), Coordinate(1., 3.)),
-            LineSegment(Coordinate(0., 0.), Coordinate(5., 2.)),
-            LineSegment(Coordinate(0., 0.), Coordinate(2., 1.)),
-            LineSegment(Coordinate(1., 3.), Coordinate(2., 4.)),
-            LineSegment(Coordinate(2., 4.), Coordinate(5., 2.)),
-            LineSegment(Coordinate(5., 2.), Coordinate(2., 1.)),
-            LineSegment(Coordinate(2., 1.), Coordinate(1., 3.)),
-            LineSegment(Coordinate(20., 11.), Coordinate(5., 2.)),
-            LineSegment(Coordinate(20., 11.), Coordinate(2., 4.))
+            LineSegment(Point(0., 0.), Point(1., 3.)),
+            LineSegment(Point(0., 0.), Point(5., 2.)),
+            LineSegment(Point(0., 0.), Point(2., 1.)),
+            LineSegment(Point(1., 3.), Point(2., 4.)),
+            LineSegment(Point(2., 4.), Point(5., 2.)),
+            LineSegment(Point(5., 2.), Point(2., 1.)),
+            LineSegment(Point(2., 1.), Point(1., 3.)),
+            LineSegment(Point(20., 11.), Point(5., 2.)),
+            LineSegment(Point(20., 11.), Point(2., 4.))
         ]
 
         self.assertEqual(len(graph.segments), len(correct))

@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from vsg.models import LineSegment, Polygon, Coordinate
+from vsg.models import LineSegment, Polygon, Point
 
 
 def intersect_point(l1: LineSegment, l2: LineSegment):
@@ -19,7 +19,7 @@ def intersect_point(l1: LineSegment, l2: LineSegment):
         return None
 
     x1, x2 = x[0, 0], x[1, 0]
-    p = Coordinate(x1, x2)
+    p = Point(x1, x2)
 
     return p if p in l1 and p in l2 else None
 
@@ -41,7 +41,7 @@ def impact_points(polygon: Polygon, segment: LineSegment):
     return points if len(points) > 0 else None
 
 
-def path_length(path: List[Coordinate]):
+def path_length(path: List[Point]):
     """
     Calculates the length of a path
     :param path: A list of Coordinates

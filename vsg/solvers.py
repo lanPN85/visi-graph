@@ -1,14 +1,14 @@
 from typing import List
 
-from vsg.models import Coordinate, Polygon, VisibilityGraph, LineSegment
+from vsg.models import Point, Polygon, VisibilityGraph, LineSegment
 
 
-def rotational_plane_sweep(s: Coordinate, t: Coordinate, obstacles: List[Polygon]) -> VisibilityGraph:
+def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon]) -> VisibilityGraph:
     graph = VisibilityGraph(s, t)
     return graph
 
 
-def brute_force(s: Coordinate, t: Coordinate, obstacles: List[Polygon]) -> VisibilityGraph:
+def brute_force(s: Point, t: Point, obstacles: List[Polygon]) -> VisibilityGraph:
     graph = VisibilityGraph(s, t)
 
     # Get vertex list

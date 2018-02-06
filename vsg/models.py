@@ -4,11 +4,11 @@ from typing import List
 import math
 import sys
 
-Coordinate = namedtuple('Coordinate', ['x', 'y'])
+Point = namedtuple('Point', ['x', 'y'])
 
 
 class LineSegment:
-    def __init__(self, p1: Coordinate, p2: Coordinate):
+    def __init__(self, p1: Point, p2: Point):
         self._p1 = p1
         self._p2 = p2
 
@@ -50,7 +50,7 @@ class LineSegment:
     def __repr__(self):
         return 'LineSegment(%s, %s)' % (self.p1, self.p2)
 
-    def __contains__(self, p: Coordinate):
+    def __contains__(self, p: Point):
         a, b, c = self.coeffs
         inx = min(self.p1.x, self.p2.x) <= p.x <= max(self.p1.x, self.p2.x)
         iny = min(self.p1.y, self.p2.y) <= p.y <= max(self.p1.y, self.p2.y)
@@ -59,18 +59,20 @@ class LineSegment:
 
 
 class Polygon:
-    def __init__(self, edges: List[LineSegment]):
-        self._edges = tuple(edges)
+    def __init__(self, vertices: List[Point]):
+        """
+        Initialize a new Polygon from a list of Points. Polygons are immutable.
+        :param vertices: A list of Point that describes how to construct the Polygon.
+        """
+        if vertices[0] == vertices[-1]:
+            vertices = vertices[:-1]
+        self._vertices = tuple(vertices)
 
-        # Construct vertex list from edges
-        self._vertices = set()  # Prevent duplicates
-        for e in self._edges:
-            self._vertices.add(e.p1)
-            self._vertices.add(e.p2)
-        self._vertices = tuple(self._vertices)
-
-        # Sanity check
-        assert len(self._vertices) == len(self._edges)
+        # Construct edge list from vertices
+        self._edges = []
+        for prev, current in zip(vertices[:-1], vertices[1:]):
+            self._edges.append(LineSegment(prev, current))
+        self._edges.append(LineSegment(vertices[-1], vertices[0]))
 
     def __contains__(self, item):
         return item in self.edges or item in self.vertices
@@ -97,7 +99,7 @@ _AdjacentNode = namedtuple('Node', ['coord', 'w'])
 
 
 class VisibilityGraph:
-    def __init__(self, s: Coordinate, t: Coordinate, segments=None):
+    def __init__(self, s: Point, t: Point, segments=None):
         self._s, self._t = s, t
         self._segments = list() if segments is None else segments
         self._adj = None

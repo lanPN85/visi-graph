@@ -2,7 +2,7 @@ import sys
 sys.path.append('.')
 import matplotlib.pyplot as plt
 
-from vsg import Coordinate, Polygon, LineSegment
+from vsg import Point, Polygon, LineSegment
 
 import vsg.plots as plots
 import vsg.solvers as solvers
@@ -11,20 +11,20 @@ import vsg.spath as spath
 
 if __name__ == '__main__':
     # plt.xkcd()
-    s = Coordinate(0., 0.)
-    t = Coordinate(11., 11.)
+    s = Point(0., 0.)
+    t = Point(11., 11.)
 
     o1 = Polygon([
-        LineSegment(Coordinate(1., 3.), Coordinate(2., 4.)),
-        LineSegment(Coordinate(2., 4.), Coordinate(5., 2.)),
-        LineSegment(Coordinate(5., 2.), Coordinate(2., 1.)),
-        LineSegment(Coordinate(2., 1.), Coordinate(1., 3.))
+        Point(1., 3.),
+        Point(2., 4.),
+        Point(5., 2.),
+        Point(2., 1.)
     ])
 
     o2 = Polygon([
-        LineSegment(Coordinate(4., 8.), Coordinate(7., 8.)),
-        LineSegment(Coordinate(7., 8.), Coordinate(4.7, 5.4)),
-        LineSegment(Coordinate(4.7, 5.4), Coordinate(4., 8.))
+        Point(4., 8.),
+        Point(7., 8.),
+        Point(4.7, 5.4)
     ])
 
     obs = [o1, o2]
@@ -49,5 +49,4 @@ if __name__ == '__main__':
     plots.plot_shortest_path(path, ax3, obstacles=obs)
     ax3.legend()
 
-    fig.show()
-    input()
+    fig.savefig('test_fig.png')
