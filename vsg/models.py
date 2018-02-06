@@ -85,7 +85,7 @@ class Polygon:
         return functional.impact_points(self, line)
 
 
-_GraphNode = namedtuple('Node', ['coord', 'w'])
+_AdjacentNode = namedtuple('Node', ['coord', 'w'])
 
 
 class VisibilityGraph:
@@ -110,8 +110,8 @@ class VisibilityGraph:
             self._adj[v] = []
 
         for s in self._segments:
-            self._adj[s.p1].append(_GraphNode(coord=s.p2, w=s.length))
-            self._adj[s.p2].append(_GraphNode(coord=s.p1, w=s.length))
+            self._adj[s.p1].append(_AdjacentNode(coord=s.p2, w=s.length))
+            self._adj[s.p2].append(_AdjacentNode(coord=s.p1, w=s.length))
 
     @property
     def segments(self):
