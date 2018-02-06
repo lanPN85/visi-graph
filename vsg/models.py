@@ -34,7 +34,8 @@ class LineSegment:
         except ZeroDivisionError:
             return 1, 0, -self.p1.x
 
-    def __len__(self):
+    @property
+    def length(self):
         ln = math.sqrt((self.p1.x - self.p2.x) ** 2 + (self.p1.y - self.p2.y) ** 2)
         return ln
 
@@ -91,10 +92,10 @@ class VisibilityGraph:
     def __init__(self, s: Coordinate, t: Coordinate, segments=None):
         self._s, self._t = s, t
         self._segments = list() if segments is None else segments
-        self._edges = None
+        self._adj = None
         self._vertices = None
 
-    def construct_edge_list(self):
+    def construct_adj_list(self):
         if self.constructed:
             print('WARNING: Overriding existing edge list.', file=sys.stderr)
 
@@ -104,22 +105,38 @@ class VisibilityGraph:
             self._vertices.add(s.p2)
         self._vertices = list(self._vertices)
 
-        self._edges = {}
+        self._adj = {}
         for v in self._vertices:
-            self._edges[v] = []
+            self._adj[v] = []
 
         for s in self._segments:
-            self._edges[s.p1].append(_GraphNode(coord=s.p2, w=len(s)))
-            self._edges[s.p2].append(_GraphNode(coord=s.p1, w=len(s)))
+            self._adj[s.p1].append(_GraphNode(coord=s.p2, w=s.length))
+            self._adj[s.p2].append(_GraphNode(coord=s.p1, w=s.length))
 
     @property
     def segments(self):
-        return self._segments
+        return tuple(self._segments)
 
     def add_segment(self, segment: LineSegment):
         if segment not in self.segments:
-            self.segments.append(segment)
+            self._segments.append(segment)
 
     @property
     def constructed(self):
-        return self._edges is not None and self._vertices is not None
+        return self._adj is not None and self._vertices is not None
+
+    @property
+    def adjacent_list(self):
+        return self._adj
+
+    @property
+    def vertices(self):
+        return tuple(self._vertices)
+
+    @property
+    def start(self):
+        return self._s
+
+    @property
+    def end(self):
+        return self._t
