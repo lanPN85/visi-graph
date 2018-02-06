@@ -3,6 +3,7 @@ from typing import List
 
 import math
 import sys
+import numpy as np
 
 Point = namedtuple('Point', ['x', 'y'])
 
@@ -51,10 +52,15 @@ class LineSegment:
         return 'LineSegment(%s, %s)' % (self.p1, self.p2)
 
     def __contains__(self, p: Point):
+        eps = 1e-4
+
+        # Round out input to avoid alignment mistakes
+        p = Point(np.around(p.x, 5), np.around(p.y, 5))
+
         a, b, c = self.coeffs
-        inx = min(self.p1.x, self.p2.x) <= p.x <= max(self.p1.x, self.p2.x)
-        iny = min(self.p1.y, self.p2.y) <= p.y <= max(self.p1.y, self.p2.y)
-        aligned = abs(a * p.x + b * p.y + c) < 1e-4
+        inx = min(self.p1.x, self.p2.x) - eps <= p.x <= max(self.p1.x, self.p2.x) + eps
+        iny = min(self.p1.y, self.p2.y) - eps <= p.y <= max(self.p1.y, self.p2.y) + eps
+        aligned = abs(a * p.x + b * p.y + c) < eps
         return inx and iny and aligned
 
 
