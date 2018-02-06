@@ -10,8 +10,8 @@ from vsg.models import Point, Polygon
 def _point_from_element(element):
     x = float(element.find('coords').get('x'))
     y = float(element.find('coords').get('y'))
-    x = np.around(x, 5)
-    y = np.around(y, 5)
+    x = float(np.around(x, 5))
+    y = float(np.around(y, 5))
     return Point(x, y)
 
 

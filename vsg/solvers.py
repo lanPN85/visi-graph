@@ -36,10 +36,6 @@ def brute_force(s: Point, t: Point, obstacles: List[Polygon]) -> VisibilityGraph
                         continue
                     for ip in impacts:
                         if ip not in verts:
-                            print(v1)
-                            print(v2)
-                            print(ip)
-                            print('---')
                             visible = False
                             break
 

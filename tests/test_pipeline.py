@@ -11,7 +11,7 @@ import vsg.inp.ggb as ggb
 
 
 if __name__ == '__main__':
-    s, t, obs = ggb.config_from_ggb('../data/ggb/vg-1.ggb')
+    s, t, obs = ggb.config_from_ggb('../data/ggb/vg-2.ggb')
 
     graph = solvers.brute_force(s, t, obs)
 
