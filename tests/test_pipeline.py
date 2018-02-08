@@ -2,8 +2,6 @@ import sys
 sys.path.append('.')
 import matplotlib.pyplot as plt
 
-from vsg import Point, Polygon, LineSegment
-
 import vsg.fileio.plots as plots
 import vsg.solvers as solvers
 import vsg.spath as spath
