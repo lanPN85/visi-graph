@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import List
+from typing import List, Tuple, Dict
 
 import math
 import sys
@@ -14,11 +14,11 @@ class LineSegment:
         self._p2 = p2
 
     @property
-    def p1(self):
+    def p1(self) -> Point:
         return self._p1
 
     @property
-    def p2(self):
+    def p2(self) -> Point:
         return self._p2
 
     @property
@@ -72,7 +72,7 @@ class Polygon:
         """
         if vertices[0] == vertices[-1]:
             vertices = vertices[:-1]
-        self._vertices = tuple(vertices)
+        self._vertices = vertices
 
         # Construct edge list from vertices
         self._edges = []
@@ -84,12 +84,12 @@ class Polygon:
         return item in self.edges or item in self.vertices
 
     @property
-    def vertices(self):
-        return self._vertices
+    def vertices(self) -> Tuple[Point, ...]:
+        return tuple(self._vertices)
 
     @property
-    def edges(self):
-        return self._edges
+    def edges(self) -> Tuple[LineSegment, ...]:
+        return tuple(self._edges)
 
     def impact_points(self, line: LineSegment):
         """
@@ -134,7 +134,7 @@ class VisibilityGraph:
             self._adj[s.p2].append(_AdjacentNode(coord=s.p1, w=s.length))
 
     @property
-    def segments(self):
+    def segments(self) -> Tuple[LineSegment]:
         return tuple(self._segments)
 
     def add_segment(self, segment: LineSegment):
@@ -146,21 +146,21 @@ class VisibilityGraph:
             self._segments.append(segment)
 
     @property
-    def constructed(self):
+    def constructed(self) -> bool:
         return self._adj is not None and self._vertices is not None
 
     @property
-    def adjacent_list(self):
+    def adjacent_list(self) -> Dict[Point, _AdjacentNode]:
         return self._adj
 
     @property
-    def vertices(self):
+    def vertices(self) -> Tuple[Point]:
         return tuple(self._vertices)
 
     @property
-    def start(self):
+    def start(self) -> Point:
         return self._s
 
     @property
-    def end(self):
+    def end(self) -> Point:
         return self._t

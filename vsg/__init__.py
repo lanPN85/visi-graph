@@ -3,5 +3,4 @@ from .solvers import *
 from .functional import *
 from .spath import *
 
-from . import plots
-from . import inp
+from . import fileio
