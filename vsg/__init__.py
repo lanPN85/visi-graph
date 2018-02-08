@@ -4,3 +4,4 @@ from .functional import *
 from .spath import *
 
 from . import plots
+from . import inp
