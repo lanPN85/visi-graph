@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     obs = [o1, o2]
 
-    graph = solvers.brute_force(s, t, obs)
+    graph = solvers.brute_force(s, t, obs, verbose=True)
 
     fig = plt.figure()
     ax1 = fig.add_subplot(131)
