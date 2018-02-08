@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 from vsg import Point, Polygon, LineSegment
 
-import vsg.plots as plots
+import vsg.fileio.plots as plots
 import vsg.solvers as solvers
 import vsg.spath as spath
-import vsg.inp.ggb as ggb
+import vsg.fileio.ggb as ggb
 
 
 if __name__ == '__main__':
