@@ -8,6 +8,24 @@ import numpy as np
 Point = namedtuple('Point', ['x', 'y'])
 
 
+class HalfLine:
+    def __init__(self, origin: Point, angle=0.):
+        self._origin = origin
+        self._angle = angle % 360.
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @property
+    def angle(self):
+        return self._angle
+
+    @property
+    def incl_angle(self):
+        return
+
+
 class LineSegment:
     def __init__(self, p1: Point, p2: Point):
         self._p1 = p1
