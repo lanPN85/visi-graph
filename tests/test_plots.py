@@ -2,9 +2,9 @@ import sys
 sys.path.append('.')
 import matplotlib.pyplot as plt
 
-from vsg import Point, Polygon, LineSegment
+from vsg import Point, Polygon
 
-import vsg.plots as plots
+import vsg.fileio.plots as plots
 import vsg.solvers as solvers
 import vsg.spath as spath
 

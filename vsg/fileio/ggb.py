@@ -39,15 +39,16 @@ def config_from_ggb(path):
 
             poly_els = constr.findall("./command[@name='Polygon']/input")
             obstacles = []
-            ppattern = re.compile('a[0-9]+')
             for el in poly_els:
                 attrs = el.attrib
-                plist = []
-                for k, v in attrs.items():
-                    if re.match(ppattern, k):
-                        pname = el.get(k)
-                        p = points[pname]
-                        plist.append(p)
+                plist, i = [], 0
+                k = 'a%d' % i
+                while k in attrs:
+                    pname = el.get(k)
+                    p = points[pname]
+                    plist.append(p)
+                    i += 1
+                    k = 'a%d' % i
                 obstacles.append(Polygon(plist))
 
             return s, t, obstacles

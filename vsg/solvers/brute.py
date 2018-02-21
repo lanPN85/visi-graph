@@ -3,6 +3,12 @@ from typing import List
 from vsg.models import Point, Polygon, VisibilityGraph, LineSegment
 
 
+def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
+                           verbose=False) -> VisibilityGraph:
+    graph = VisibilityGraph(s, t)
+    return graph
+
+
 def brute_force(s: Point, t: Point, obstacles: List[Polygon],
                 verbose=False) -> VisibilityGraph:
     graph = VisibilityGraph(s, t)
@@ -33,7 +39,7 @@ def brute_force(s: Point, t: Point, obstacles: List[Polygon],
                     if impacts is None:
                         continue
                     for ip in impacts:
-                        if ip not in verts:
+                        if ip != v1 and ip != v2:
                             visible = False
                             if verbose:
                                 print('  %s: POLYGON IMPACT' % segment)
