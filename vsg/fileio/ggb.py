@@ -1,5 +1,4 @@
 import zipfile
-import re
 import numpy as np
 
 from xml.etree import ElementTree
