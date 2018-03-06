@@ -12,20 +12,59 @@ class HalfLine:
         self._angle = angle % 360.
 
     @property
-    def origin(self):
+    def origin(self) -> Point:
         return self._origin
 
     @property
-    def angle(self):
+    def angle(self) -> float:
         return self._angle
 
     @property
-    def incl_angle(self):
-        return
+    def incl_angle(self) -> float:
+        agl = self.angle % 180.
+        if agl > 90:
+            agl = - (180 - agl)
+        return agl
 
     @property
     def coeffs(self):
-        return
+        """
+        Calculates a, b, c for the line equation ax + by + c = 0
+        :return: A tuple (a, b, c)
+        """
+        if self.incl_angle == 90. or self.incl_angle == -90.:
+            return 1., 0., -self.origin.x
+        else:
+            slope = math.tan(math.radians(self.incl_angle))
+            k = slope * self.origin.x - self.origin.y
+            return -slope, 1., k
+
+    @classmethod
+    def from_points(cls, origin: Point, target: Point):
+        if origin == target:
+            raise ValueError('Cannot create half line from 2 identical points')
+        line = LineSegment(origin, target)
+
+        if origin.y > target.y:
+            if origin.x == target.x:
+                angle = 90.
+            elif origin.x < target.x:
+                angle = math.degrees(math.asin((origin.y - target.y) / line.length))
+            else:
+                angle = 90. + math.degrees(math.acos((origin.y - target.y) / line.length))
+        elif origin.y < target.y:
+            if origin.x == target.x:
+                angle = 270.
+            elif origin.x > target.x:
+                angle = 180. + math.degrees(math.asin((target.y - origin.y) / line.length))
+            else:
+                angle = 270. + math.degrees(math.acos((target.y - origin.y) / line.length))
+        else:
+            if origin.x > target.x:
+                angle = 180.
+            else:
+                angle = 0.
+        return cls(origin, angle)
 
 
 class LineSegment:

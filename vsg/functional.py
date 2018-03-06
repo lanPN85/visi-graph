@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from vsg.models import LineSegment, Polygon, Point
+from vsg.models import *
 
 
 def intersect_point(l1: LineSegment, l2: LineSegment):
@@ -22,6 +22,36 @@ def intersect_point(l1: LineSegment, l2: LineSegment):
     p = Point(x1, x2)
 
     return p if p in l1 and p in l2 else None
+
+
+def hl_intersect_point(hl: HalfLine, ls: LineSegment):
+    a1, b1, c1 = hl.coeffs
+    a2, b2, c2 = ls.coeffs
+
+    A = np.asarray([[a1, b1], [a2, b2]], dtype=np.float)
+    b = np.asarray([[-c1], [-c2]], dtype=np.float)
+
+    try:
+        x = np.linalg.solve(A, b)
+        x = np.around(x, 5)
+    except np.linalg.LinAlgError:
+        return None
+
+    x1, x2 = x[0, 0], x[1, 0]
+    p = Point(x1, x2)
+
+    return p if p in ls else None
+
+
+def hl_polygon_intersections(hl: HalfLine, polygon: Polygon):
+    points = []
+
+    for e in polygon.edges:
+        p = hl_intersect_point(hl, e)
+        if p is not None:
+            points.append(p)
+
+    return points if len(points) > 0 else None
 
 
 def impact_points(polygon: Polygon, segment: LineSegment):
