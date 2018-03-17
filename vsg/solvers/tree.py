@@ -1,6 +1,7 @@
 from typing import Union
 
 from vsg.models import LineSegment
+from vsg import functional
 
 
 class EdgeNode:
@@ -13,7 +14,7 @@ class EdgeNode:
         self._parent = parent
 
     @property
-    def edge(self):
+    def edge(self) -> LineSegment:
         return self._edge
 
     @property
@@ -189,6 +190,32 @@ class BalancedEdgeSearchTree:
                     self._root.parent = None
                     break
 
+    def leftmost(self) -> Union[LineSegment, None]:
+        current_node = self._root
+
+        while current_node is not None:
+            if current_node.left is not None:
+                current_node = current_node.left
+            else:
+                break
+
+        return None if current_node is None else current_node.edge
+
+    def intersect_edge(self, e: LineSegment, weight):
+        current_node = self._root
+
+        while current_node is not None:
+            ip = functional.intersect_point(current_node.edge, e)
+            if ip is not None:
+                break
+            else:
+                if weight > current_node.weight:
+                    current_node = current_node.right
+                else:
+                    current_node = current_node.left
+
+        return None if current_node is None else current_node.edge
+
     def delete_node(self, edge: LineSegment, weight):
         current_node = self._root
         replace_node = None
@@ -196,7 +223,7 @@ class BalancedEdgeSearchTree:
         while current_node is not None:
             parent = current_node.parent
 
-            if current_node.edge == edge:
+            if current_node.edge == edge and weight == current_node.weight:
                 if current_node.left is None and current_node.right is None:
                     if parent is None:
                         self._root = None
@@ -228,7 +255,9 @@ class BalancedEdgeSearchTree:
                     replace_node = current_node.right
                 else:
                     sc = current_node.successor
+                    sc.left = current_node.left
                     sc.parent.left = sc.right
+
                     if parent is None:
                         self._root = sc
                         self._root.parent = None
