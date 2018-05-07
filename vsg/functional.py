@@ -40,7 +40,7 @@ def hl_intersect_point(hl: HalfLine, ls: LineSegment):
     x1, x2 = x[0, 0], x[1, 0]
     p = Point(x1, x2)
 
-    return p if p in ls else None
+    return p if p in ls and p in hl else None
 
 
 def hl_polygon_intersections(hl: HalfLine, polygon: Polygon):

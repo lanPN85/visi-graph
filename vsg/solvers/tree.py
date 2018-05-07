@@ -85,7 +85,7 @@ class EdgeNode:
         return self.left_depth - self.right_depth
 
     def __repr__(self):
-        return '%s [W: %.2f]' % (self.edge, self.weight)
+        return '%s [W: %s]' % (self.edge, str(self.weight))
 
 
 class BalancedEdgeSearchTree:
@@ -105,6 +105,8 @@ class BalancedEdgeSearchTree:
         return '[ROOT]| ' + self.__node2str(self._root).rstrip()
 
     def __node2str(self, node: EdgeNode, indent=0):
+        if node is None:
+            return ''
         prefix = '  ' * (indent + 1)
 
         s = '%s\n' % node
@@ -291,6 +293,7 @@ class BalancedEdgeSearchTree:
                 prev_depth = max(prev_depth + 1, other_depth)
 
                 if bfactor < -1:
+                    print(self)
                     z = parent.right
                     b = z.balance_factor
                     if b > 0:

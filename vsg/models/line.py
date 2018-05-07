@@ -39,6 +39,13 @@ class HalfLine:
             k = slope * self.origin.x - self.origin.y
             return -slope, 1., k
 
+    def __contains__(self, item: Point):
+        if item == self.origin:
+            return True
+
+        hl = HalfLine.from_points(self.origin, item)
+        return self.angle == hl.angle
+
     @classmethod
     def from_points(cls, origin: Point, target: Point):
         if origin == target:
