@@ -22,7 +22,7 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
 
     for i, p in enumerate(points[:-1]):
         # Sort other points by positive-x angle and distance to p
-        others = points[:]
+        others = points[:].copy()
         others.remove(p)
         others.sort(key=lambda x: LineSegment(p, x).length)
         others.sort(key=lambda x: HalfLine.from_points(p, x).angle)
@@ -67,7 +67,8 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
         print(tree)
         for j, op in enumerate(others):
             print('## ', op)
-            if _visible(p, op, tree, point2poly, others, vis, j):
+            print(tree)
+            if _visible(p, op, tree, point2poly, others, vis, j) and points.index(op) > i:
                 print('  VISIBLE')
                 graph.add_segment(LineSegment(p, op))
                 vis[j] = True
@@ -76,6 +77,7 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
 
             # Decide whether to insert or delete each edge
             for e in point2edge[op]:
+                # print(e)
                 rp = list(filter(lambda x: x != op, [e.p1, e.p2]))[0]
                 if rp == p:
                     continue
@@ -84,7 +86,11 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                 its = functional.hl_intersect_point(baseline, e)
                 a0 = HalfLine.from_points(p, op).angle
                 a1 = HalfLine.from_points(p, rp).angle
-                before = a1 < a0
+                if its is not None:
+                    before = False
+                else:
+
+                    before = a1 < a0
 
                 if before:
                     print('  Removing %s' % str(e))
@@ -158,17 +164,19 @@ class VisitOrder:
     def __calculate(self):
         baseline = HalfLine(self._origin)
         cp = functional.hl_intersect_point(baseline, self._line)
+        hl1 = HalfLine.from_points(self._origin, self._line.p1)
+        hl2 = HalfLine.from_points(self._origin, self._line.p2)
+
         if cp is not None:
             self._is_cut = True
             self._cut_dist = LineSegment(cp, self._origin).length
+            self._max_angle = max(hl1.angle, hl2.angle)
             self._min_angle = None
             self._min_dist = None
         else:
             self._is_cut = False
             self._cut_dist = None
-
-            hl1 = HalfLine.from_points(self._origin, self._line.p1)
-            hl2 = HalfLine.from_points(self._origin, self._line.p2)
+            self._max_angle = max(hl1.angle, hl2.angle)
             self._min_angle = min(hl1.angle, hl2.angle)
 
             if hl1.angle < hl2.angle:
@@ -180,6 +188,10 @@ class VisitOrder:
     @property
     def min_angle(self):
         return self._min_angle
+
+    @property
+    def max_angle(self):
+        return self._max_angle
 
     @property
     def min_dist(self):
@@ -211,13 +223,19 @@ class VisitOrder:
             if other.is_cut:
                 return self.cut_dist > other.cut_dist
             else:
-                return True
+                if other.min_angle <= 180.:
+                    return False
+                else:
+                    return self.max_angle > other.min_angle
         else:
             if other.is_cut:
-                return False
-            else:
-                if self.min_angle > other.min_angle:
+                if self.min_angle <= 180.:
                     return True
+                else:
+                    return self.min_angle > other.max_angle
+            else:
+                if self.min_angle != other.min_angle:
+                    return self.min_angle > other.min_angle
                 else:
                     return self.min_dist > other.min_dist
 
@@ -229,13 +247,19 @@ class VisitOrder:
             if other.is_cut:
                 return self.cut_dist < other.cut_dist
             else:
-                return False
+                if other.min_angle <= 180.:
+                    return True
+                else:
+                    return self.max_angle < other.min_angle
         else:
             if other.is_cut:
-                return True
+                if self.min_angle <= 180.:
+                    return False
+                else:
+                    return self.min_angle < other.max_angle
             else:
-                if self.min_angle < other.min_angle:
-                    return True
+                if self.min_angle != other.min_angle:
+                    return self.min_angle < other.min_angle
                 else:
                     return self.min_dist < other.min_dist
 

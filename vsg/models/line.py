@@ -44,7 +44,7 @@ class HalfLine:
             return True
 
         hl = HalfLine.from_points(self.origin, item)
-        return self.angle == hl.angle
+        return abs(self.angle - hl.angle) <= 1e-3
 
     @classmethod
     def from_points(cls, origin: Point, target: Point):
@@ -118,7 +118,7 @@ class LineSegment:
         return 'LineSegment(%s, %s)' % (self.p1, self.p2)
 
     def __contains__(self, p: Point):
-        eps = 1e-4
+        eps = 1e-3
 
         # Round out input to avoid alignment mistakes
         p = Point(np.around(p.x, 5), np.around(p.y, 5))
@@ -126,5 +126,5 @@ class LineSegment:
         a, b, c = self.coeffs
         inx = min(self.p1.x, self.p2.x) - eps <= p.x <= max(self.p1.x, self.p2.x) + eps
         iny = min(self.p1.y, self.p2.y) - eps <= p.y <= max(self.p1.y, self.p2.y) + eps
-        aligned = abs(a * p.x + b * p.y + c) < eps
+        aligned = abs(a * p.x + b * p.y + c) <= eps
         return inx and iny and aligned
