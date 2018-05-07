@@ -59,20 +59,20 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                     vis[j] = True
 
         # Find visible vertices
-        print(p)
+        checked = []
         for j, op in enumerate(others):
             if _visible(p, op, tree, point2poly, others, vis, j):
                 graph.add_segment(LineSegment(p, op))
                 vis[j] = True
 
             # Decide whether to insert or delete each edge
-            baseline = VisitOrder(p, LineSegment(p, op))
             for e in point2edge[op]:
-                _order = VisitOrder(p, e)
-                if _order > baseline:
-                    tree.add_node(e, _order)
+                rp = list(filter(lambda x: x != op, [e.p1, e.p2]))[0]
+                if rp in checked:
+                    tree.delete_node(e, VisitOrder(p, e))
                 else:
-                    tree.delete_node(e, _order)
+                    tree.add_node(e, VisitOrder(p, e))
+            checked.append(op)
 
     return graph
 
