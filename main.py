@@ -87,6 +87,7 @@ if __name__ == '__main__':
         ax3 = fig.add_subplot(133)
         ax3.set_title('Shortest path')
         fileio.plots.plot_shortest_path(path, ax3, obstacles=obs)
+        plt.tight_layout()
 
         fig.savefig(os.path.join(args.output, prefix + '.png'))
         fig.clf()

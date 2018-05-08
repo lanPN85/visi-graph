@@ -3,12 +3,15 @@ from sortedcontainers import SortedListWithKey
 
 
 from vsg.models import Point, Polygon, VisibilityGraph, HalfLine, LineSegment
-from vsg.solvers.tree import BalancedEdgeSearchTree
 from vsg import functional
 
 
 def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                            verbose=False) -> VisibilityGraph:
+    def log_print(*args, **kwargs):
+        if verbose:
+            print(*args, **kwargs)
+
     graph = VisibilityGraph(s, t)
     points = [s, t]
 
@@ -22,7 +25,7 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
 
     for i, p in enumerate(points[:-1]):
         # Sort other points by positive-x angle and distance to p
-        others = points[:].copy()
+        others = points[:]
         others.remove(p)
         others.sort(key=lambda x: LineSegment(p, x).length)
         others.sort(key=lambda x: HalfLine.from_points(p, x).angle)
@@ -32,7 +35,6 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
         point2edge[s] = []
         point2edge[t] = []
         xline = HalfLine(p, 0.)
-        # tree = BalancedEdgeSearchTree()
         tree = SortedListWithKey(key=lambda x: VisitOrder(p, x))
         vis = [False for _ in range(len(others))]
 
@@ -54,7 +56,6 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                 if p not in e:
                     ips = functional.hl_intersect_point(xline, e)
                     if ips is not None:
-                        # tree.add_node(e, VisitOrder(p, e))
                         tree.add(e)
 
         if tobs is not None:
@@ -63,13 +64,11 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                     vis[j] = True
 
         # Find visible vertices
-        print('# ', p)
-        print(tree)
+        log_print('# Current point:', p)
         for j, op in enumerate(others):
-            print('## ', op)
-            print(tree)
+            log_print('## Sweeping: ', op)
             if _visible(p, op, tree, point2poly, others, vis, j) and points.index(op) > i:
-                print('  VISIBLE')
+                log_print('  VISIBLE')
                 graph.add_segment(LineSegment(p, op))
                 vis[j] = True
             else:
@@ -77,7 +76,6 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
 
             # Decide whether to insert or delete each edge
             for e in point2edge[op]:
-                # print(e)
                 rp = list(filter(lambda x: x != op, [e.p1, e.p2]))[0]
                 if rp == p:
                     continue
@@ -86,17 +84,15 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                 a0 = HalfLine.from_points(p, op).angle
                 a1 = HalfLine.from_points(p, rp).angle
                 if its is not None:
-                    before = a1 <= 270.
+                    before = False
                 else:
                     before = a1 <= a0
 
                 if before:
-                    print('  Removing %s' % str(e))
-                    # tree.delete_node(e, VisitOrder(p, e))
+                    log_print('  Removing %s' % str(e))
                     tree.discard(e)
                 else:
-                    print('  Adding %s' % str(e))
-                    # tree.add_node(e, VisitOrder(p, e))
+                    log_print('  Adding %s' % str(e))
                     tree.add(e)
 
     return graph
@@ -107,7 +103,6 @@ def _visible(origin: Point, p: Point, tree: SortedListWithKey,
     pw = LineSegment(origin, p)
     try:
         it1 = functional.impact_points(point2poly[p], pw)
-        print('  I1:', it1)
         if it1 is not None and len(it1) > 1:
             return False
     except KeyError:
@@ -115,7 +110,6 @@ def _visible(origin: Point, p: Point, tree: SortedListWithKey,
 
     try:
         it1 = functional.impact_points(point2poly[origin], pw)
-        print('  I1\':', it1)
         if it1 is not None and len(it1) > 1:
             return False
     except KeyError:
@@ -124,7 +118,6 @@ def _visible(origin: Point, p: Point, tree: SortedListWithKey,
     if idx == 0 or others[idx-1] not in pw:
         # e = tree.leftmost()
         e = tree[0] if len(tree) > 0 else None
-        print('  E:', e)
 
         if e is not None:
             it3 = functional.intersect_point(pw, e)
@@ -135,13 +128,11 @@ def _visible(origin: Point, p: Point, tree: SortedListWithKey,
         else:
             return True
     elif not vis[idx-1]:
-        print('  Prev')
         return False
     else:
         ww = LineSegment(p, others[idx - 1])
         # it2 = tree.intersect_edge(ww, VisitOrder(origin, ww))
         it2 = intersect_binsearch(tree, ww)
-        print('  I2:', it2)
         if it2 is not None:
             return False
         else:
