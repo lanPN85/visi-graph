@@ -3,7 +3,25 @@ from collections import namedtuple
 import numpy as np
 import math
 
-Point = namedtuple('Point', ['x', 'y'])
+
+# Point = namedtuple('Point', ['x', 'y'])
+class Point:
+    def __init__(self, x=0., y=0.):
+        self.x = x
+        self.y = y
+
+    def __eq__(self, other):
+        eps = 1e-4
+        return abs(self.x - other.x) <= eps and abs(self.y - other.y) <= eps
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __str__(self):
+        return 'Point(x=%.3f, y=%.3f)' % (self.x, self.y)
+
+    def __repr__(self):
+        return str(self)
 
 
 class HalfLine:
@@ -117,8 +135,11 @@ class LineSegment:
     def __repr__(self):
         return 'LineSegment(%s, %s)' % (self.p1, self.p2)
 
+    # noinspection PyTypeChecker
     def __contains__(self, p: Point):
         eps = 1e-3
+        if p == self.p1 or p == self.p2:
+            return True
 
         # Round out input to avoid alignment mistakes
         p = Point(np.around(p.x, 5), np.around(p.y, 5))

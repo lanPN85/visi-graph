@@ -21,7 +21,7 @@ def intersect_point(l1: LineSegment, l2: LineSegment):
     x1, x2 = x[0, 0], x[1, 0]
     p = Point(x1, x2)
 
-    return p if p in l1 and p in l2 else None
+    return p if (p in l1 and p in l2) else None
 
 
 def hl_intersect_point(hl: HalfLine, ls: LineSegment):
@@ -63,6 +63,10 @@ def impact_points(polygon: Polygon, segment: LineSegment):
     """
 
     points = set()
+    for p in [segment.p1, segment.p2]:
+        if p in polygon.vertices:
+            points.add(p)
+
     for edge in polygon.edges:
         p = intersect_point(segment, edge)
         if p is not None:

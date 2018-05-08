@@ -53,7 +53,7 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
 
                 if p not in e:
                     ips = functional.hl_intersect_point(xline, e)
-                    if ips is not None and len(ips) > 1:
+                    if ips is not None:
                         # tree.add_node(e, VisitOrder(p, e))
                         tree.add(e)
 
@@ -82,15 +82,13 @@ def rotational_plane_sweep(s: Point, t: Point, obstacles: List[Polygon],
                 if rp == p:
                     continue
 
-                baseline = HalfLine(p)
-                its = functional.hl_intersect_point(baseline, e)
+                its = functional.hl_intersect_point(xline, e)
                 a0 = HalfLine.from_points(p, op).angle
                 a1 = HalfLine.from_points(p, rp).angle
                 if its is not None:
-                    before = False
+                    before = a1 <= 270.
                 else:
-
-                    before = a1 < a0
+                    before = a1 <= a0
 
                 if before:
                     print('  Removing %s' % str(e))
@@ -110,6 +108,14 @@ def _visible(origin: Point, p: Point, tree: SortedListWithKey,
     try:
         it1 = functional.impact_points(point2poly[p], pw)
         print('  I1:', it1)
+        if it1 is not None and len(it1) > 1:
+            return False
+    except KeyError:
+        pass
+
+    try:
+        it1 = functional.impact_points(point2poly[origin], pw)
+        print('  I1\':', it1)
         if it1 is not None and len(it1) > 1:
             return False
     except KeyError:
