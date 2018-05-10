@@ -11,6 +11,9 @@ class Point:
         self.y = y
 
     def __eq__(self, other):
+        if not isinstance(other, Point):
+            return False
+
         eps = 1e-4
         return abs(self.x - other.x) <= eps and abs(self.y - other.y) <= eps
 
